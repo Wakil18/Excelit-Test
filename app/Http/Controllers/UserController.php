@@ -19,9 +19,6 @@ class UserController extends Controller
 
         $file = $request->file('img');
 
-        // $img_name = date('YmdHi').$file->getClientOriginalName();
-        // $save_path = 'upload/img/'.$img_name;
-
         $img = imagecreatefromstring(file_get_contents($file));
         ob_start();
         imagejpeg($img,NULL,100);
@@ -30,8 +27,7 @@ class UserController extends Controller
         imagedestroy($img);
         $content = imagecreatefromstring($cont);
 
-        $img_name = date('YmdHi').$file->getClientOriginalName();
-        // $save_path = 'upload/img/'.$img_name;
+        $img_name = date('YmdHi');
 
         $output = 'upload/img/' . $img_name . '.webp';
         imagewebp($content, $output);
