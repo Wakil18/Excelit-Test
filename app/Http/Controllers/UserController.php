@@ -16,17 +16,35 @@ class UserController extends Controller
 
     public function update(Request $request){
 
-        $img = $request->file('img');
-        $img_file = date('YmdHi').$img->getClientOriginalName();
-        $save_path = 'upload/img/'.$img_file;
-        $intervention = Image::make($img)->encode('png', 90);
-        $intervention->save(public_path('upload/img/'.$img_file));
+
+        $file = $request->file('img');
+
+        // $img_name = date('YmdHi').$file->getClientOriginalName();
+        // $save_path = 'upload/img/'.$img_name;
+
+        $img = imagecreatefromstring(file_get_contents($file));
+        ob_start();
+        imagejpeg($img,NULL,100);
+        $cont = ob_get_contents();
+        ob_end_clean();
+        imagedestroy($img);
+        $content = imagecreatefromstring($cont);
+
+        $img_name = date('YmdHi').$file->getClientOriginalName();
+        // $save_path = 'upload/img/'.$img_name;
+
+        $output = 'upload/img/' . $img_name . '.webp';
+        imagewebp($content, $output);
+        imagedestroy($content);
+        echo '<h4>image Save in Webp format</h4>';
+
 
         User::insert([
             'name' => $request->name,
             'email' => $request->email,
-            'img' => $save_path,
+            'img' => $output,
             'created_at' => Carbon::now()
         ]);
+
     }
 }
